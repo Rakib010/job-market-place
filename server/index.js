@@ -24,6 +24,7 @@ async function run() {
   try {
     const db = client.db("solo-db");
     const jobsCollection = db.collection("jobs");
+    const bidsCollection = db.collection("bids");
 
     // add job, save a job data in db
     app.post("/add-job", async (req, res) => {
@@ -62,7 +63,7 @@ async function run() {
       res.send(result);
     });
 
-    // updated
+    // updated (posted job)
     app.put("/update-job/:id", async (req, res) => {
       const id = req.params.id;
       const data = req.body;
@@ -74,6 +75,59 @@ async function run() {
       const result = await jobsCollection.updateOne(query, updated, options);
       res.send(result);
     });
+
+    // place bid post in database
+    app.post("/add-bid", async (req, res) => {
+      const bidData = req.body;
+      // if a user placed a bid already in this job(same gmail die same job ke ekbare basi bid kora jabe na
+      const query = { email: bidData.email, jobId: bidData.jobId };
+      const alreadyExist = await bidsCollection.findOne(query);
+      if (alreadyExist) {
+        return res
+          .status(400)
+          .send("You have already placed a bid on this job");
+      }
+      // 1. save data in bids collection
+      const result = bidsCollection.insertOne(bidData);
+      // 2. increase bid count in jobs collection
+      const filter = { _id: new ObjectId(bidData.jobId) };
+      const update = {
+        $inc: { bid_count: 1 },
+      };
+      const updateBidCount = await jobsCollection.updateOne(filter, update);
+
+      res.send(result);
+    });
+
+    //get all bids & bid request for a specific user &
+    app.get("/bids/:email", async (req, res) => {
+      const isBuyer = req.query.buyer;
+      const email = req.params.email;
+      let query = {};
+      if (isBuyer) {
+        query.buyer = email;
+      } else {
+        query.email = email;
+      }
+
+      const result = await bidsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    /*  //get all bids for a specific user & 
+    app.get("/bids/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await bidsCollection.find(query).toArray();
+      res.send(result);
+    });
+    // get all bid request for a specific user
+    app.get("/bid-request/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { buyer: email };
+      const result = await bidsCollection.find(query).toArray();
+      res.send(result);
+    });  */
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
