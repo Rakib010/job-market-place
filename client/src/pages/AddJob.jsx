@@ -1,15 +1,34 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { AuthContext } from "../providers/AuthProvider";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../Hooks/useAuth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { axiosSecure } from "../Hooks/UseAxiosSecure";
 
 const AddJob = () => {
   const [startDate, setStartDate] = useState(new Date());
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // useMutation (post,delete,updated kora jay)
+  const { isLoading, mutateAsync } = useMutation({
+    mutationFn: async (addJob) => {
+      await axiosSecure.post(`/add-job`, addJob);
+    },
+    //
+    onSuccess: () => {
+      console.log("data save");
+      //  fetch data store cashing
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,8 +58,11 @@ const AddJob = () => {
     // console.log(formData);
 
     try {
-      //make a post request
-      await axios.post(`${import.meta.env.VITE_API_URL}/add-job`, formData);
+      /* //make a post request axios
+      await axios.post(`${import.meta.env.VITE_API_URL}/add-job`, formData); */
+      //make a post request using useMutation hook
+      await mutateAsync(formData);
+
       //Reset form
       form.reset();
       //Show toast and navigate
@@ -147,7 +169,7 @@ const AddJob = () => {
           </div>
           <div className="flex justify-end mt-6">
             <button className="disabled:cursor-not-allowed px-8 py-2.5 leading-5 text-white transition-colors duration-300 transhtmlForm bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
-              Save
+              {isLoading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>
