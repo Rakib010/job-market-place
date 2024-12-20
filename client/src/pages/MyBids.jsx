@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../providers/AuthProvider";
 import BidsCard from "./BidsCard";
+import { AuthContext } from "../providers/AuthProvider";
 
 const MyBids = () => {
   const [bids, setBids] = useState();
@@ -9,15 +9,23 @@ const MyBids = () => {
 
   // get data
   useEffect(() => {
-    fetchBidsData();
+    if (user?.email) {
+      fetchBidsData();
+    }
   }, [user]);
 
   const fetchBidsData = async () => {
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}/bids/${user?.email}`
-    );
-    setBids(data);
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/bids/${user?.email}`,
+        { withCredentials: true }
+      );
+      setBids(data);
+    } catch (error) {
+      console.error("Error fetching bids:", error);
+    }
   };
+
   // handle status
   const handleStatusChange = async (id, prevStatus, status) => {
     if (prevStatus !== "In Progress") {

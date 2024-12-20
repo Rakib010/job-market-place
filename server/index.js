@@ -31,7 +31,7 @@ const client = new MongoClient(uri, {
 // verify token
 const verifyToken = (req, res, next) => {
   const token = req.cookies?.token;
-  console.log(token);
+  //console.log(token);
   if (!token) return res.status(401).send({ message: "unauthorized access" });
   jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
     if (err) return res.status(401).send({ message: "unauthorized access" });
@@ -148,12 +148,14 @@ async function run() {
 
     //get all bids & bid request for a specific user &
     app.get("/bids/:email", verifyToken, async (req, res) => {
-      const decodedEmail = req.user?.email
+      const decodedEmail = req.user?.email;
       const isBuyer = req.query.buyer;
       const email = req.params.email;
-      // verify token 
-      if(decodedEmail !== email)  return res.status(401).send({ message: "unauthorized access" })
-     
+      // verify token
+      if (decodedEmail !== email) {
+        return res.status(401).send({ message: "unauthorized access" });
+      }
+
       //
       let query = {};
       if (isBuyer) {
