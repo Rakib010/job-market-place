@@ -20,7 +20,21 @@ const MyBids = () => {
   };
   // handle status
   const handleStatusChange = async (id, prevStatus, status) => {
-    console.table({ id, prevStatus, status });
+    if (prevStatus !== "In Progress") {
+      return console.log("Not Allowed");
+    }
+
+    try {
+      const { data } = await axios.patch(
+        `${import.meta.env.VITE_API_URL}/bid-status-updated/${id}`,
+        { status }
+      );
+      console.log(data);
+      // refresh ui
+      fetchBidsData();
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   return (

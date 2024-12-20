@@ -1,6 +1,5 @@
 import { format } from "date-fns";
 
-
 // eslint-disable-next-line react/prop-types
 const BidsRequestCard = ({ bid, handleStatusChange }) => {
   const { _id, title, deadline, price, category, status, email } = bid || {};
@@ -48,6 +47,7 @@ const BidsRequestCard = ({ bid, handleStatusChange }) => {
           {/* Accept Button */}
           <button
             onClick={() => handleStatusChange(_id, status, "In Progress")}
+            disabled={status === "In Progress" || status === "Complete"}
             className="disabled:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none"
           >
             <svg
@@ -68,6 +68,7 @@ const BidsRequestCard = ({ bid, handleStatusChange }) => {
           {/* Reject Button */}
           <button
             onClick={() => handleStatusChange(_id, status, "Reject")}
+            disabled={status === "Rejected" || status === "Complete"}
             className="disabled:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-yellow-500 focus:outline-none"
           >
             <svg

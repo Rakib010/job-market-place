@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import BidsRequestCard from "./BidsRequestCard";
+import { toast } from "react-hot-toast";
 
 const BidRequests = () => {
   const [bidRequest, setBidRequest] = useState();
@@ -13,7 +14,8 @@ const BidRequests = () => {
 
   const fetchBidRequest = async () => {
     const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}/bids/${user?.email}?buyer=true`
+      `${import.meta.env.VITE_API_URL}/bids/${user?.email}?buyer=true`,
+      { withCredentials: true }
     );
     setBidRequest(data);
   };
@@ -23,7 +25,20 @@ const BidRequests = () => {
     if (prevStatus === status || prevStatus === "Completed") {
       return console.log("Not Allowed");
     }
-     
+
+    try {
+      const { data } = await axios.patch(
+        `${import.meta.env.VITE_API_URL}/bid-status-updated/${id}`,
+        { status }
+      );
+      //console.log(data);
+      toast.success(`Status Changed To${status}`);
+      //refresh ui
+      fetchBidRequest();
+    } catch (err) {
+      //console.log(err.message);
+      toast.error(err.message);
+    }
   };
 
   return (
