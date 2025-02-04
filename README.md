@@ -4,7 +4,7 @@
 This is a **job marketplace website** where users can **post jobs, place bids, and manage job requests** efficiently. The platform includes dynamic categories, secure authentication, and deadline validation to ensure a seamless user experience. It is designed with a visually appealing UI and a user-friendly interface.
 
 ## 🌐 Live Project
-🔗 [Live Demo](#) *(Replace with actual link)*
+🔗 [Live Demo](#) 
 
 ## 🛠️ Technologies Used
 - **Frontend**: React.js, Tailwind CSS
@@ -34,7 +34,7 @@ This is a **job marketplace website** where users can **post jobs, place bids, a
 ## 🛠️ How to Run Locally
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/yourusername/job-marketplace.git
+   git clone https://github.com/Rakib010/job-market-place.git
    cd job-marketplace
    ```
 2. **Install dependencies:**
@@ -51,6 +51,6 @@ This is a **job marketplace website** where users can **post jobs, place bids, a
    - Visit `http://localhost:5000` to explore the project.
 
 ## 🔗 Useful Links
-- [Live Demo](#) *(Replace with actual link)*
+- [Live Demo](#) 
 
 
